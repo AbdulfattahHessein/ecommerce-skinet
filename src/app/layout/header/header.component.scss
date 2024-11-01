@@ -1,0 +1,15 @@
+:host {
+  @apply block border-b shadow-md p-3 w-full;
+}
+.custom-badge .mat-badge-content {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 10px;
+}
+
+.custom-badge .mat-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+}
