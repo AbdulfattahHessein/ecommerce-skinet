@@ -22,3 +22,11 @@ $customTheme: mat.define-theme();
 .container {
   @apply mx-auto max-w-screen-2xl px-5;
 }
+
+.text-primary {
+  color: #7d00fa;
+}
+
+button.match-input-height {
+  height: var(--form-field-container-height) !important;
+}
