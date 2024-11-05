@@ -23,10 +23,16 @@ $customTheme: mat.define-theme();
   @apply mx-auto max-w-screen-2xl px-5;
 }
 
-.text-primary {
-  color: #7d00fa;
+button.match-input-height {
+  height: var(--mat-form-field-container-height) !important;
 }
 
-button.match-input-height {
-  height: var(--form-field-container-height) !important;
+@layer utilities {
+  .text-primary {
+    color: #7d00fa;
+  }
+}
+
+.mdc-notched-outline__notch {
+  border-right-style: none !important;
 }
