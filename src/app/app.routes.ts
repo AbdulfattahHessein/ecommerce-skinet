@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
 import { ShopComponent } from './features/shop/shop.component';
 import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
+import { NotFoundComponent } from './fearures/not-found/not-found.component';
+import { ServerErrorComponent } from './fearures/server-error/server-error.component';
 
 export const routes: Routes = [
   {
@@ -17,8 +19,16 @@ export const routes: Routes = [
     component: ProductDetailsComponent,
   },
   {
+    path: 'not-found',
+    component: NotFoundComponent,
+  },
+  {
+    path: 'server-error',
+    component: ServerErrorComponent,
+  },
+  {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'not-found',
     pathMatch: 'full',
   },
 ];
