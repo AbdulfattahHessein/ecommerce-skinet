@@ -3,9 +3,10 @@ export type Pagination<T> = {
   pageSize: number;
   count: number;
   data: T[];
-}
+};
 
 export type Product = {
+  id: number;
   name: string;
   description: string;
   price: number;
@@ -13,5 +14,4 @@ export type Product = {
   type: string;
   brand: string;
   quantityInStock: number;
-  id: number;
 };

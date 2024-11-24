@@ -4,6 +4,8 @@ import { ShopComponent } from './features/shop/shop.component';
 import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
 import { NotFoundComponent } from './fearures/not-found/not-found.component';
 import { ServerErrorComponent } from './fearures/server-error/server-error.component';
+import { CartComponent } from './fearures/cart/cart.component';
+import { CheckoutComponent } from './fearures/checkout/checkout.component';
 
 export const routes: Routes = [
   {
@@ -17,6 +19,14 @@ export const routes: Routes = [
   {
     path: 'shop/:id',
     component: ProductDetailsComponent,
+  },
+  {
+    path: 'cart',
+    component: CartComponent,
+  },
+  {
+    path: 'checkout',
+    component: CheckoutComponent,
   },
   {
     path: 'not-found',
