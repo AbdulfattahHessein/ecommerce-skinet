@@ -12,15 +12,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 400) {
-        alert(err.error);
         if (err.error.errors) {
-          const modalStateErrors = [];
+          const modalStateErrors: string[] = [];
           for (const key in err.error.errors) {
             if (err.error.errors[key]) {
               modalStateErrors.push(err.error.errors[key]);
             }
           }
-          throw modalStateErrors.flat();
+          // throw modalStateErrors.flat();
+          return throwError(() => modalStateErrors.flat());
         } else {
           snackbar.error(err.error.title || err.error);
         }

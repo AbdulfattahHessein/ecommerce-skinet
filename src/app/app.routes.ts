@@ -6,6 +6,10 @@ import { NotFoundComponent } from './fearures/not-found/not-found.component';
 import { ServerErrorComponent } from './fearures/server-error/server-error.component';
 import { CartComponent } from './fearures/cart/cart.component';
 import { CheckoutComponent } from './fearures/checkout/checkout.component';
+import { LoginComponent } from './fearures/account/login/login.component';
+import { RegisterComponent } from './fearures/account/register/register.component';
+import { authGuard } from './core/guards/auth.guard';
+import { emptyCartGuard } from './core/guards/empty-cart.guard';
 
 export const routes: Routes = [
   {
@@ -27,6 +31,15 @@ export const routes: Routes = [
   {
     path: 'checkout',
     component: CheckoutComponent,
+    canActivate: [authGuard, emptyCartGuard],
+  },
+  {
+    path: 'account/login',
+    component: LoginComponent,
+  },
+  {
+    path: 'account/register',
+    component: RegisterComponent,
   },
   {
     path: 'not-found',
