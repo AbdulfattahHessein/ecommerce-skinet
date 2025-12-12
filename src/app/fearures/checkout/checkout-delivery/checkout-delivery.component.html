@@ -1,0 +1,23 @@
+<div class="w-full">
+  <mat-radio-group
+    class="grid grid-cols-2 gap-4"
+    [(ngModel)]="cart.selectedDeliveryMethod"
+    (ngModelChange)="updateCart($event)"
+  >
+    @for (method of methods$ | async; track method.id) {
+    <label
+      class="p-3 border border-gray-200 rounded-md hover:bg-purple-100 cursor-pointer w-full h-full"
+    >
+      <mat-radio-button class="w-full h-full" [value]="method">
+        <div class="flex flex-col w-full h-full cursor-pointer">
+          <strong>
+            {{ method.shortName }} - {{ method.price | currency }}
+          </strong>
+          <span class="text-sm">{{ method.description }}</span>
+        </div>
+      </mat-radio-button>
+    </label>
+
+    }
+  </mat-radio-group>
+</div>

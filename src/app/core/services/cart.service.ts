@@ -1,9 +1,10 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Cart, CartItem } from '../../shared/models/cart';
-import { Product } from '../../shared/models/product';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Cart, CartItem } from '../../shared/models/cart';
+import { DeliveryMethod } from '../../shared/models/delivery-method';
+import { Product } from '../../shared/models/product';
 
 @Injectable({
   providedIn: 'root',
@@ -15,15 +16,20 @@ export class CartService {
   itemCount = computed(() =>
     this.cart()?.items.reduce((count, item) => count + item.quantity, 0)
   );
+
+  selectedDeliveryMethod = signal<DeliveryMethod | null>(null);
   totals = computed(() => {
     const cart = this.cart();
+
     if (!cart) return null;
+
+    const method = this.selectedDeliveryMethod();
 
     let subtotal = cart.items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-    const shipping = 0;
+    const shipping = method ? method.price : 0;
     const discount = 0;
     return {
       subtotal,
