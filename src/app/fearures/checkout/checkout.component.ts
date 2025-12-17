@@ -11,9 +11,11 @@ import { ConfirmationToken, StripeAddressElement, StripeAddressElementChangeEven
 import { firstValueFrom } from 'rxjs';
 import { AccountService } from '../../core/services/account.service';
 import { CartService } from '../../core/services/cart.service';
+import { OrderService } from '../../core/services/order.service';
 import { SnackbarService } from '../../core/services/snackbar.service';
 import { StripeService } from '../../core/services/stripe.service';
 import { OrderSummaryComponent } from '../../shared/components/order-summary/order-summary.component';
+import { OrderToCreate, ShippingAddress } from '../../shared/models/order';
 import { Address } from '../../shared/models/user';
 import { CheckoutDeliveryComponent } from "./checkout-delivery/checkout-delivery.component";
 import { CheckoutReviewComponent } from "./checkout-review/checkout-review.component";
@@ -34,6 +36,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   cartService = inject(CartService);
   accountService = inject(AccountService);
   router = inject(Router);
+  orderService = inject(OrderService);
   loading = false;
 
   saveAddress: boolean = false;
@@ -96,7 +99,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onStepChange(event: StepperSelectionEvent) {
     if (event.selectedIndex === 1) {
       if (this.saveAddress) {
-        const address = await this.getAddressFromStripeAddress();
+        const address = await this.getAddressFromStripeAddress() as Address;
 
         address && await firstValueFrom(this.accountService.updateAddress(address))
 
@@ -116,12 +119,24 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     try {
       if (this.confirmationToken) {
         const result = await this.stripeService.confirmPayment(this.confirmationToken);
-        if (result.error) throw new Error(result.error.message);
-
-        this.cartService.deleteCart();
-        this.cartService.selectedDeliveryMethod.set(null);
-        this.snackbar.success('Payment confirmed successfully.');
-        this.router.navigateByUrl('/checkout/success');
+        if (result.paymentIntent?.status === 'succeeded') {
+          const order = await this.createOrderModel();
+          const orderResult = await firstValueFrom(this.orderService.createOrder(order));
+          if (orderResult) {
+            this.orderService.orderComplete = true;
+            this.cartService.deleteCart();
+            this.cartService.selectedDeliveryMethod.set(null);
+            this.router.navigateByUrl('/checkout/success');
+          } else {
+            throw new Error('Order could not be created.');
+          }
+        }
+        else if (result.error) {
+          throw new Error(result.error.message)
+        }
+        else {
+          throw new Error('Something went wrong.');
+        }
       }
     } catch (error: any) {
       this.snackbar.error(error.message || 'Something went wrong.');
@@ -132,11 +147,38 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async getAddressFromStripeAddress(): Promise<Address | null> {
+
+  private async createOrderModel(): Promise<OrderToCreate> {
+    const cart = this.cartService.cart();
+    const shippingAddress = await this.getAddressFromStripeAddress() as ShippingAddress;
+
+    const card = this.confirmationToken?.payment_method_preview?.card;
+
+    if (!cart?.id || !cart?.deliveryMethodId || !shippingAddress || !card) {
+      throw new Error('Something went wrong.');
+    }
+
+
+    return {
+      cartId: cart.id,
+      deliveryMethodId: cart.deliveryMethodId,
+      shippingAddress,
+      paymentSummary: {
+        brand: card.brand,
+        last4: +card.last4,
+        expMonth: card.exp_month,
+        expYear: card.exp_year
+      }
+    };
+
+  }
+
+  private async getAddressFromStripeAddress(): Promise<Address | ShippingAddress | null> {
     const result = await this.addressElement?.getValue()
     const address = result?.value.address;
     if (address) {
       return {
+        name: result.value.name,
         line1: address.line1,
         line2: address.line2,
         city: address.city,

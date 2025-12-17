@@ -3,12 +3,12 @@ import { Component, inject, input, OnInit } from '@angular/core';
 import { ConfirmationToken } from '@stripe/stripe-js';
 import { CartService } from '../../../core/services/cart.service';
 import { AddressPipe } from '../../../shared/pipes/address.pipe';
-import { CreditCardPipe } from '../../../shared/pipes/credit-card.pipe';
+import { PaymentCardPipe } from '../../../shared/pipes/payment-card.pipe';
 
 @Component({
   selector: 'app-checkout-review',
   standalone: true,
-  imports: [CurrencyPipe, AddressPipe, CreditCardPipe],
+  imports: [CurrencyPipe, AddressPipe, PaymentCardPipe],
   templateUrl: './checkout-review.component.html',
   styleUrl: './checkout-review.component.scss'
 })

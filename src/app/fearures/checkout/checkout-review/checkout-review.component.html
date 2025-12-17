@@ -6,7 +6,7 @@
       {{ confirmationToken()?.shipping | address }}
     </dt>
     <dt class="font-medium">Payments details</dt>
-    <dt class="mt-1 text-gray-500">{{ confirmationToken()?.payment_method_preview | creditCard }}</dt>
+    <dt class="mt-1 text-gray-500">{{ confirmationToken()?.payment_method_preview | paymentCard }}</dt>
   </dl>
 </div>
 <div class="mt-6 mx-auto">
@@ -17,11 +17,7 @@
         <tr>
           <td class="py-4">
             <div class="flex items-center gap-4">
-              <img
-                [src]="item.pictureUrl"
-                alt="product image"
-                class="w-10 h-10"
-              />
+              <img [src]="item.pictureUrl" alt="product image" class="w-10 h-10" />
               <span>{{ item.productName }}</span>
             </div>
           </td>

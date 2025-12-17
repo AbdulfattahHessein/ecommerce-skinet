@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Address, User } from '../../shared/models/user';
+import { SignalrService } from './signalr.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { Address, User } from '../../shared/models/user';
 export class AccountService {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
+  private signalr = inject(SignalrService);
   currentUser = signal<User | null>(null);
 
   login(values: any) {
@@ -23,7 +25,8 @@ export class AccountService {
       .post<User>(this.baseUrl + 'login', values, {
         params,
       })
-      .pipe(switchMap(() => this.getUserInfo()));
+      .pipe(switchMap(() => this.getUserInfo()))
+      .pipe(tap(() => this.signalr.createHubConnection()));
   }
 
   register(values: any) {
@@ -33,13 +36,16 @@ export class AccountService {
   getUserInfo() {
     return this.http
       .get<User>(this.baseUrl + 'account/user-info')
-      .pipe(tap((user) => this.currentUser.set(user)));
+      .pipe(tap((user) =>
+        this.currentUser.set(user)
+      ));
   }
 
   logout() {
     return this.http
       .post<never>(this.baseUrl + 'account/logout', {})
-      .pipe(tap(() => this.currentUser.set(null)));
+      .pipe(tap(() => this.currentUser.set(null)))
+      .pipe(tap(() => this.signalr.stopHubConnection()));
   }
 
   updateAddress(address: Address) {
